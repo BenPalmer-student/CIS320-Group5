@@ -1,0 +1,3 @@
+HOST = 'localhost'
+PORT = 12346
+KEYLOGGER_OPTION = '2'
