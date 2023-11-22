@@ -1,7 +1,5 @@
 from timeit import default_timer as timer
-from pynput.keyboard import Listener
 import socket
-import threading
 import config
 
 #helper func to translate raw binary addresses to readable mac addresses
@@ -48,15 +46,3 @@ def send_to_server(socket, payload):
 
 def receive_from_server(socket):
     return socket.recv(1024).decode('utf-8')
-
-def send_malware_option(socket, option):
-    send_to_server(socket, option)
-
-def make_thread(target, args):
-    return threading.Thread(target=target, args=(args,))
-
-def make_keyboard_listener(on_release):
-    return Listener(on_release=on_release)
-
-def disconnect(client_socket):
-    client_socket.close()

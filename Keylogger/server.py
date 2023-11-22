@@ -20,7 +20,6 @@ class Keylogger(threading.Thread):
 
             # Stop the listener when the client disconnects
             self.listener.stop()
-            print("ere")
             break
 
         print("Server: keylogger stopped")
