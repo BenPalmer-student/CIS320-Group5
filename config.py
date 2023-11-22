@@ -1,3 +1,5 @@
-HOST = 'localhost'
-PORT = 12346
+CLIENT_HOST = 'localhost'
+CLIENT_PORT = 12346
+SERVER_HOST = 'localhost'
+SERVER_PORT = 12346
 KEYLOGGER_OPTION = '2'

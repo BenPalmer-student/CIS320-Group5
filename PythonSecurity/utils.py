@@ -23,7 +23,7 @@ def create_socket():
 def connect_blocked_socket():
     client_socket = create_socket()
     try:
-        client_socket.connect((config.HOST, config.PORT))
+        client_socket.connect((config.CLIENT_HOST, config.CLIENT_PORT))
         return client_socket
     except (socket.error, OSError) as e:
         print(f"Blocked socket connection failed: {e}")
@@ -33,7 +33,7 @@ def connect_unblocked_socket():
     client_socket = create_socket()
     client_socket.setblocking(0)  # Set the socket to non-blocking mode
     try:
-        client_socket.connect((config.HOST, config.PORT))
+        client_socket.connect((config.CLIENT_HOST, config.CLIENT_PORT))
         return client_socket
     except BlockingIOError:
         return client_socket # The socket is non-blocking, so it will raise an exception immediately

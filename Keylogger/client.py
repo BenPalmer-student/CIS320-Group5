@@ -20,8 +20,6 @@ class KeyloggerThread(threading.Thread):
             except (BlockingIOError, ConnectionResetError, BrokenPipeError):
                 pass
 
-        print("Keylogger thread is stopping")
-
     def stop(self):
         self.disconnect_socket.set()
         self.join()

