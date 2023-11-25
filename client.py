@@ -1,57 +1,65 @@
-# import tkinter as tk
-import customtkinter as ctk  # import customtkinter instead of tkinter.
-from Keylogger.client import start_keylogger
+import customtkinter as ctk
+from Keylogger.client import KeyloggerThread
 
-def activate_keylogger():
-    # main.button_pressed_keylogger = True
-    print("Keylogger activated!")
-    # start_keylogger = Keylogger()
-    # start_keylogger.start()
+BUTTON_START_KEYLOGGER_TEXT = 'Start keylogger'
+BUTTON_STOP_KEYLOGGER_TEXT = 'Stop keylogger'
+BUTTON_START_SNIFFER_TEXT = 'Start packet sniffer'
+BUTTON_STOP_SNIFFER_TEXT = 'Stop packet sniffer'
+BUTTON_CLOSE_TEXT = 'Close'
 
-def deactivate_keylogger():
-    print('Deacting keylogger')
-    # stop_keylogger = Keylogger()
-    # stop_keylogger.stop()
+class ByteBurglarApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.geometry("300x500")
+        self.root.title("ByteBurglar")
+        ctk.set_appearance_mode('dark')
 
-def activate_packet_sniffer():
-    # main.button_pressed_p_s = True
-    print("Packet sniffer activated!")
+        self.keylogger_thread = None
 
-def deactivate_packet_sniffer():
-    print('Deactivating packet sniffer.')
+        title = ctk.CTkLabel(root, text='ByteBurglar', font=('Arial', 18))
+        title.pack(padx=20, pady=20)  # Title placement x,y;
+            #y starts at 0 at the top and as 0 increases y moves down. If you want a button further down you increase y
 
-def main():
-    # here we add the UI
-    # start_keylogger()
-    window = ctk.CTk()  # Use CTk instead of Tk
-    ctk.set_appearance_mode('dark')
+        self.button_keylogger = ctk.CTkButton(root, text=BUTTON_START_KEYLOGGER_TEXT, command=self.toggle_keylogger)
+        self.button_keylogger.pack(padx=20, pady=10)
 
-    window.geometry("300x500")  # Window size x,y
-    window.title("ByteBurglar")  # Window title
+        self.button_keylogger_stop = ctk.CTkButton(root, text=BUTTON_STOP_KEYLOGGER_TEXT, command=self.deactivate_keylogger)
+        self.button_keylogger_stop.pack(padx=20, pady=0)
 
-    title = ctk.CTkLabel(window, text='ByteBurglar', font=('Arial', 18))  # Use CTkLabel instead of Label
-    title.pack(padx=20, pady=20)  # Title placement x,y;
-        #y starts at 0 at the top and as 0 increases y moves down. If you want a button further down you increase y
-        
-    button_keylogger = ctk.CTkButton(window, text='Start keylogger', command=activate_keylogger) #creating buttons
-    button_keylogger.pack(padx=20, pady=10)
+        self.button_packet_sniffer = ctk.CTkButton(root, text=BUTTON_START_SNIFFER_TEXT, command=self.activate_packet_sniffer)
+        self.button_packet_sniffer.pack(padx=20, pady=20)
 
-    button_keylogger_stop = ctk.CTkButton(window, text = 'Stop keylogger', command = deactivate_keylogger)
-    button_keylogger_stop.pack(padx = 20, pady =0)
+        self.button_packet_sniffer_stop = ctk.CTkButton(root, text=BUTTON_STOP_SNIFFER_TEXT, command=self.deactivate_packet_sniffer)
+        self.button_packet_sniffer_stop.pack(padx=20, pady=0)
 
+        self.button_close = ctk.CTkButton(root, text=BUTTON_CLOSE_TEXT, command=self.on_close)
+        self.button_close.pack(padx=20, pady=60)
 
-    button_packet_sniffer = ctk.CTkButton(window, text='Start packet sniffer', command=activate_packet_sniffer)
-    button_packet_sniffer.pack(padx=20, pady=20)
+        self.root.protocol("WM_DELETE_WINDOW", self.on_close) # handle x close button case
 
-    button_packet_sniffer_stop = ctk.CTkButton(window, text='Stop packet sniffer', command=deactivate_packet_sniffer)
-    button_packet_sniffer_stop.pack(padx=20, pady=0)
+    def toggle_keylogger(self):
+        if self.keylogger_thread is None or not self.keylogger_thread.is_alive():
+            self.keylogger_thread = KeyloggerThread()
+            self.keylogger_thread.start()
 
+    def deactivate_keylogger(self):
+        if self.keylogger_thread is not None:
+            self.keylogger_thread.stop()
+            self.keylogger_thread = None
 
-    button_close = ctk.CTkButton(window, text='Close', command=window.destroy)
-    button_close.pack(padx=20, pady=60)
+    def activate_packet_sniffer(self):
+        print("Packet sniffer activated!")
 
-    window.mainloop()
+    def deactivate_packet_sniffer(self):
+        print('Deactivating packet sniffer')
 
+    def on_close(self):
+        if self.keylogger_thread is not None and self.keylogger_thread.is_alive():
+            self.deactivate_keylogger()
+
+        self.root.destroy()
 
 if __name__ == "__main__":
-    main()
+    root = ctk.CTk()
+    app = ByteBurglarApp(root)
+    root.mainloop()
