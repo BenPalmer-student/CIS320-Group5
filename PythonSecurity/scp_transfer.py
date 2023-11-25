@@ -3,9 +3,9 @@ import paramiko
 class SCPUploader:
     def __init__(self):
         # SSH connection details (replace with your own)
-        self.ssh_host = '192.168.56.1'
-        self.ssh_user = 'Ben_P'
-        self.ssh_password = 'Appa1achiaN'
+        self.ssh_host = 'host ip'
+        self.ssh_user = 'username'
+        self.ssh_password = 'password'
         self.ssh_port = 22
 
     def upload_file(self, filename):
