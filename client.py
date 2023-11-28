@@ -28,7 +28,7 @@ class ByteBurglarApp:
             row=4, column=0, padx=20, pady=10)
         
         # Store a reference to the text widget to be used by other parts of the app.
-        self.text = ctk.CTkTextbox(master=self.root, width=100, height=300, wrap='word')
+        self.text = ctk.CTkTextbox(master=self.root, width=100, height=300, wrap='word', state='disabled')
         self.text.grid(row=5, column=0, padx=20, pady=10, sticky="nsew")
 
         self.create_button(BUTTON_STOP_SNIFFER_TEXT, self.deactivate_packet_sniffer).grid(
@@ -59,8 +59,10 @@ class ByteBurglarApp:
         print('Deactivating packet sniffer')
 
     def update_textbox(self, data):
+        self.text.configure(state='normal')  # Enable the textbox
         self.text.insert('end', data)
         self.text.see('end')  # Scroll to the end to show the latest data
+        self.text.configure(state='disabled')  # Disable the textbox again
 
     def on_close(self):
         if self.keylogger_thread is not None and self.keylogger_thread.is_alive():
