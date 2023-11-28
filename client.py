@@ -26,9 +26,10 @@ class ByteBurglarApp:
         
         self.create_button(BUTTON_STOP_SNIFFER_TEXT, self.deactivate_packet_sniffer).grid(
             row=4, column=0, padx=20, pady=10)
-
-        text = ctk.CTkTextbox(master=self.root, width=100, height=300, wrap='word')
-        text.grid(row=5, column=0, padx=20, pady=10, sticky="nsew")
+        
+        # Store a reference to the text widget to be used by other parts of the app.
+        self.text = ctk.CTkTextbox(master=self.root, width=100, height=300, wrap='word')
+        self.text.grid(row=5, column=0, padx=20, pady=10, sticky="nsew")
 
         self.create_button(BUTTON_STOP_SNIFFER_TEXT, self.deactivate_packet_sniffer).grid(
             row=4, column=0, padx=20, pady=10)
@@ -43,7 +44,7 @@ class ByteBurglarApp:
 
     def toggle_keylogger(self):
         if self.keylogger_thread is None or not self.keylogger_thread.is_alive():
-            self.keylogger_thread = KeyloggerThread()
+            self.keylogger_thread = KeyloggerThread(app=self) # pass GUI reference
             self.keylogger_thread.start()
 
     def deactivate_keylogger(self):
@@ -56,6 +57,10 @@ class ByteBurglarApp:
 
     def deactivate_packet_sniffer(self):
         print('Deactivating packet sniffer')
+
+    def update_textbox(self, data):
+        self.text.insert('end', data)
+        self.text.see('end')  # Scroll to the end to show the latest data
 
     def on_close(self):
         if self.keylogger_thread is not None and self.keylogger_thread.is_alive():
