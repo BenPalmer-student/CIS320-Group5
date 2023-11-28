@@ -10,7 +10,7 @@ class EthernetFrame:
         #"!" indicates network big-endian, "6s" indicates a char array of size 6, and "h" is an unsigned int indicating protocol used in packet
         unpacked_data = unpack('!6s6sh', data[0:self.length])
         #.ntoh() is a conversion function from socket module 
-        self.protocol = socket.ntoh(unpacked_data[2])
+        self.protocol = socket.ntohl(unpacked_data[2])
         self.destination = mac_addr(data[0:6])
         self.source = mac_addr(data[6:12])
         self.leftover_data = data[self.length:]
