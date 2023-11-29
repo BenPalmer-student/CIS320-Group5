@@ -3,6 +3,9 @@ import threading
 from Keylogger.client import KeyloggerThread
 from PythonSecurity.packet_sniffer import PacketSniffer
 from PythonSecurity.scp_transfer import SCPUploader
+from PythonSecurity.pkt_capture import PCAPFile
+from PythonSecurity.nettypes import EthernetFrame, IPHeader, TCPSegment, UDPSegment
+
 
 BUTTON_START_KEYLOGGER_TEXT = 'Start keylogger'
 BUTTON_STOP_KEYLOGGER_TEXT = 'Stop keylogger'
