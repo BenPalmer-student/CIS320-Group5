@@ -60,7 +60,7 @@ class ByteBurglarApp:
 
     def deactivate_keylogger(self):
         if self.keylogger_thread is not None:
-            self.update_textbox('Stopped Keylogger!\n', 'success')
+            self.update_textbox('\nStopped Keylogger!\n', 'success')
             self.keylogger_thread.stop()
             self.keylogger_thread = None
 
